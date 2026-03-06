@@ -1,3 +1,6 @@
+import 'package:clone_tour_guide/models/floor.dart';
+import 'package:clone_tour_guide/providers/floor/floor_viewmodel.dart';
+import 'package:clone_tour_guide/providers/poi/poi_viewmodel.dart';
 import 'package:clone_tour_guide/shared/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -15,136 +18,142 @@ class MapFragment extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final floorIndex = useState(1);
+    final floorsAsyncValue = ref.watch(floorsViewModelProvider);
+    final selectedFloor = useState<Floor?>(null);
 
-    final floors = [
-      AppString.floorBunker.tr(),
-      AppString.floorGround.tr(),
-      AppString.floorL1.tr(),
-      AppString.floorL2.tr(),
-      AppString.floorRooftop.tr(),
-    ];
+    useEffect(() {
+      if (floorsAsyncValue is AsyncData &&
+          (floorsAsyncValue.value?.isNotEmpty ?? false)) {
+        selectedFloor.value = floorsAsyncValue.value!.first;
+      }
+      return null;
+    }, [floorsAsyncValue]);
 
     return Column(
       children: [
-        // App Bar area
         CustomAppBar(
           title: AppString.mapTitle.tr(),
           actions: [
             const LanguageSelector(),
-            context.gapMD, // SizedBox(width: 16)
-            const Icon(
-              Icons.qr_code_scanner,
-              color: Colors.white,
-            ), // Scanner icon as in mockup
+            context.gapMD,
+            const Icon(Icons.qr_code_scanner, color: Colors.white),
           ],
         ),
-
-        // Map Image Area
         Expanded(
-          child: InteractiveViewer(
-            minScale: 0.5,
-            maxScale: 3.0,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Placeholder Map Background
-                Container(
-                  margin: context.paddingMD,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        spreadRadius: 2,
+          child: floorsAsyncValue.when(
+            data: (floors) {
+              if (selectedFloor.value == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final poisAsyncValue = ref.watch(
+                poisViewModelProvider(selectedFloor.value!.id),
+              );
+              return InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 3.0,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (selectedFloor.value!.mapImageUrl != null)
+                      Image.network(selectedFloor.value!.mapImageUrl!)
+                    else
+                      Container(
+                        margin: context.paddingMD,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.map,
+                                size: 100.w,
+                                color: Colors.grey.shade300,
+                              ),
+                              context.gapMD,
+                              Text(
+                                '${AppString.mapTitle.tr()}: ${selectedFloor.value!.name}',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: Center(
+                    poisAsyncValue.when(
+                      data: (pois) => Stack(
+                        children: pois
+                            .where(
+                              (p) => p.positionX != null && p.positionY != null,
+                            )
+                            .map(
+                              (poi) => Positioned(
+                                top: poi.positionY,
+                                left: poi.positionX,
+                                child: _buildMapPin(context, poi.code),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, s) =>
+                          Center(child: Text('Failed to load POIs')),
+                    ),
+                  ],
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, s) => Center(child: Text('Failed to load floors')),
+          ),
+        ),
+        floorsAsyncValue.when(
+          data: (floors) => Container(
+            color: Colors.black,
+            height: ScreenUtil().bottomBarHeight * 1.4,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: floors.length,
+              itemBuilder: (context, index) {
+                final floor = floors[index];
+                final isSelected = floor.id == selectedFloor.value?.id;
+                return InkWell(
+                  onTap: () => selectedFloor.value = floor,
+                  child: Container(
+                    width: 65.w,
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.map,
-                          size: 100.w,
-                          color: Colors.grey.shade300,
+                          Icons.layers,
+                          color: isSelected ? Colors.amber : Colors.white54,
+                          size: 20.sp,
                         ),
-                        context.gapMD, // SizedBox(height: 16)
+                        context.gapXS,
                         Text(
-                          '${AppString.mapTitle.tr()}: ${floors[floorIndex.value]}',
-                          style: TextStyle(color: Colors.grey.shade600),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          floor.name,
+                          style: TextStyle(
+                            color: isSelected ? Colors.amber : Colors.white54,
+                            fontSize: AppConstants.fontSizeLabelMedium,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-
-                // Example Map Marker POI (Mockup)
-                Positioned(
-                  top: 150,
-                  left: 120,
-                  child: _buildMapPin(context, '108'),
-                ),
-                Positioned(
-                  top: 180,
-                  left: 200,
-                  child: _buildMapPin(context, '113'), // Centered room
-                ),
-                Positioned(
-                  bottom: 120,
-                  right: 150,
-                  child: _buildMapPin(context, '102'),
-                ),
-              ],
+                );
+              },
             ),
           ),
-        ),
-
-        // Floor Selector Tab Bar
-        Container(
-          color: Colors.black, // Dark background from mockup for floors
-          height: ScreenUtil().bottomBarHeight * 1.4,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: floors.length,
-            itemBuilder: (context, index) {
-              final isSelected = index == floorIndex.value;
-              return InkWell(
-                onTap: () => floorIndex.value = index,
-                child: Container(
-                  width: 65.w,
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.layers, // Placeholder for map layers icon
-                        color: isSelected ? Colors.amber : Colors.white54,
-                        size: 20.sp,
-                      ),
-                      context.gapXS, // SizedBox(height: 4)
-                      Text(
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        floors[index],
-                        style: TextStyle(
-                          color: isSelected ? Colors.amber : Colors.white54,
-                          fontSize: AppConstants.fontSizeLabelMedium,
-
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+          loading: () => const SizedBox.shrink(),
+          error: (e, s) => const SizedBox.shrink(),
         ),
       ],
     );
@@ -153,7 +162,6 @@ class MapFragment extends HookConsumerWidget {
   Widget _buildMapPin(BuildContext context, String code) {
     return InkWell(
       onTap: () {
-        // Navigate directly to audio detail
         Navigator.of(
           context,
         ).pushNamed(RoutesName.audioDetail, arguments: code);
@@ -165,7 +173,7 @@ class MapFragment extends HookConsumerWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
