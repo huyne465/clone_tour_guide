@@ -13,6 +13,7 @@ import '../../constants/theme/theme_extensions.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:clone_tour_guide/constants/app_string.dart';
 import 'package:clone_tour_guide/shared/widgets/language_selector.dart';
+import 'package:clone_tour_guide/constants/app_endpoints.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MapScreen extends HookConsumerWidget {
@@ -68,7 +69,7 @@ class MapScreen extends HookConsumerWidget {
                           ColoredBox(
                             color: Colors.white,
                             child: Image.network(
-                              selectedFloor.value!.mapImageUrl!,
+                              '${AppEndpoints.baseUrl}${AppEndpoints.floorMapImage(selectedFloor.value!.id)}',
                               loadingBuilder: (context, child, progress) {
                                 if (progress == null) return child;
                                 return SizedBox(

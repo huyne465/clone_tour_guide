@@ -9,4 +9,6 @@ class AppEndpoints {
   static const String pois = '/pois';
   static const String poisCode = '/pois/code';
   static const String floors = '/floors';
+
+  static String floorMapImage(String floorId) => '/floors/$floorId/map-image';
 }
