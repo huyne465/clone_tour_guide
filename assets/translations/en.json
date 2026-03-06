@@ -23,5 +23,10 @@
   "floor_ground": "Ground",
   "floor_l1": "L1",
   "floor_l2": "L2",
-  "floor_rooftop": "Rooftop"
+  "floor_rooftop": "Rooftop",
+  "poi_not_found": "No attraction found with this code. Please check and try again.",
+  "loading": "Loading...",
+  "loading_desc": "Description content is being loaded, please wait a moment.",
+  "load_error": "Failed to load data. Please check your connection.",
+  "retry": "Retry"
 }

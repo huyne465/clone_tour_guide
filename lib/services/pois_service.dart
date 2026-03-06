@@ -1,3 +1,4 @@
+import 'package:clone_tour_guide/constants/app_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:clone_tour_guide/models/poi.dart';
 import 'package:clone_tour_guide/services/api_client.dart';
@@ -10,7 +11,7 @@ class PoisService {
   Future<List<Poi>> getPois({String? floorId}) async {
     try {
       final response = await _apiClient.dio.get(
-        '/pois',
+        AppEndpoints.pois,
         queryParameters: {if (floorId != null) 'floorId': floorId},
       );
       if (response.statusCode == 200) {
@@ -26,7 +27,9 @@ class PoisService {
 
   Future<Poi> getPoiByCode(String code) async {
     try {
-      final response = await _apiClient.dio.get('/pois/code/$code');
+      final response = await _apiClient.dio.get(
+        '${AppEndpoints.poisCode}/$code',
+      );
       if (response.statusCode == 200) {
         return Poi.fromJson(response.data);
       } else {

@@ -1,14 +1,16 @@
+import 'package:clone_tour_guide/constants/theme/theme_extensions.dart';
 import 'package:clone_tour_guide/models/poi.dart';
+import 'package:clone_tour_guide/providers/poi/poi_provider.dart';
+import 'package:clone_tour_guide/router/routes_name.dart';
 import 'package:clone_tour_guide/shared/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../providers/poi/poi_viewmodel.dart';
-import '../../router/routes_name.dart';
-import '../../constants/theme/theme_extensions.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:clone_tour_guide/constants/app_string.dart';
 import 'package:clone_tour_guide/shared/widgets/language_selector.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ListFragment extends ConsumerWidget {
   const ListFragment({super.key});
@@ -33,7 +35,25 @@ class ListFragment extends ConsumerWidget {
       ),
       body: poisAsyncValue.when(
         data: (pois) => buildPoiList(context, pois),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () {
+          final dummyPois = List.generate(
+            5,
+            (index) => Poi(
+              id: 'dummy_$index',
+              code: '00$index',
+              title: 'Loading Title $index',
+              audioUrl: '',
+              duration: 0,
+              floorId: '',
+              imageUrl:
+                  '', // ensures the image box is rendered as a skeleton block
+            ),
+          );
+          return Skeletonizer(
+            enabled: true,
+            child: buildPoiList(context, dummyPois),
+          );
+        },
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );
@@ -60,13 +80,19 @@ class ListFragment extends ConsumerWidget {
                 width: double.infinity,
                 height: 200.h,
                 child: poi.imageUrl != null
-                    ? Image.network(
-                        poi.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                              child: Icon(Icons.error, color: Colors.red),
-                            ),
+                    ? ClipRRect(
+                        borderRadius: BorderRadiusGeometry.only(
+                          topLeft: context.radiusSM.topLeft,
+                          topRight: context.radiusSM.topRight,
+                        ),
+                        child: Image.network(
+                          poi.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Center(
+                                child: Icon(Icons.error, color: Colors.red),
+                              ),
+                        ),
                       )
                     : const Center(
                         child: Icon(Icons.image, color: Colors.grey),
@@ -76,7 +102,10 @@ class ListFragment extends ConsumerWidget {
                 alignment: Alignment.centerLeft,
                 decoration: BoxDecoration(
                   color: context.colorScheme.primary,
-                  borderRadius: context.radiusSM,
+                  borderRadius: BorderRadiusGeometry.only(
+                    bottomLeft: context.radiusSM.bottomLeft,
+                    bottomRight: context.radiusSM.bottomRight,
+                  ),
                 ),
                 child: ListTile(
                   title: Text(
@@ -86,12 +115,7 @@ class ListFragment extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  subtitle: Text(
-                    poi.description ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: context.colorScheme.onPrimary),
-                  ),
+
                   trailing: Icon(
                     Icons.chevron_right,
                     color: context.colorScheme.onPrimary,

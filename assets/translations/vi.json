@@ -23,5 +23,10 @@
   "floor_ground": "Trệt",
   "floor_l1": "L1",
   "floor_l2": "L2",
-  "floor_rooftop": "Sân thượng"
+  "floor_rooftop": "Sân thượng",
+  "poi_not_found": "Không tìm thấy điểm tham quan với mã này. Vui lòng kiểm tra lại.",
+  "loading": "Đang tải...",
+  "loading_desc": "Nội dung mô tả đang được tải về, vui lòng chờ một chút.",
+  "load_error": "Không thể tải dữ liệu. Vui lòng kiểm tra kết nối.",
+  "retry": "Thử lại"
 }

@@ -16,15 +16,15 @@ class WelcomeScreen extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // Background Image
-          Image.asset(
-            'assets/images/dinh_doc_lap.jpg', // Tạm thời dùng placeholder path
+          Image.network(
+            'https://ik.imagekit.io/tvlk/blog/2023/01/dinh-doc-lap-1.jpg?tr=dpr-2,w-675', // Tạm thời dùng placeholder path
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 color: context.colorScheme.primaryContainer,
                 child: const Center(
                   child: Text(
-                    'Background Image Placeholder\n(Add assets/images/dinh_doc_lap.jpg)',
+                    'Background Image Placeholder',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -47,67 +47,66 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
 
-          SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Top spacing
-                SizedBox(height: 60.h),
-
-                // Logo placeholder area (Centered)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.w,
-                    vertical: 20.h,
-                  ),
-                  color: Colors.white.withValues(alpha: 0.9),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.fingerprint, // Tạm thời logo
-                        color: context.colorScheme.primary,
-                        size: 48.w,
-                      ),
-                      context.gapMD, // 16px gap
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppString.guideApp.tr(),
-                            style: TextStyle(
-                              fontSize: AppConstants.fontSizeHeadlineLarge,
-                              fontWeight: FontWeight.bold,
-                              color: context.colorScheme.primary,
-                              letterSpacing: 1.2,
-                            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Top spacing
+              // Logo placeholder area (Centered)
+              Container(
+                color: Colors.white.withValues(alpha: 0.9),
+                width: context.screenWidth,
+                height: context.screenHeight * 0.2,
+                padding: context.paddingXXL,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.fingerprint, // Tạm thời logo
+                      color: context.colorScheme.primary,
+                      size: 48.w,
+                    ),
+                    context.gapMD, // 16px gap
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppString.guideApp.tr(),
+                          style: TextStyle(
+                            fontSize: AppConstants.fontSizeHeadlineLarge,
+                            fontWeight: FontWeight.bold,
+                            color: context.colorScheme.primary,
+                            letterSpacing: 1.2,
                           ),
-                          Text(
-                            AppString.vietnamDiscovery.tr(),
-                            style: TextStyle(
-                              fontSize: AppConstants.fontSizeLabelSmall,
-                              fontWeight: FontWeight.w600,
-                              color: context.colorScheme.onSurface,
-                              letterSpacing: 0.5,
-                            ),
+                        ),
+                        Text(
+                          AppString.vietnamDiscovery.tr(),
+                          style: TextStyle(
+                            fontSize: AppConstants.fontSizeLabelSmall,
+                            fontWeight: FontWeight.w600,
+                            color: context.colorScheme.onSurface,
+                            letterSpacing: 0.5,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+              ),
 
-                // Bottom Button
-                Padding(
+              // Bottom Button
+              SafeArea(
+                child: Padding(
                   padding: EdgeInsets.only(bottom: 40.h),
                   child: CircleAvatar(
-                    radius: 30.w,
+                    radius: 24.w,
                     backgroundColor: context.colorScheme.primary,
                     child: IconButton(
                       icon: Icon(
                         Icons.arrow_forward,
                         color: Colors.white,
-                        size: 30.w,
+                        size: 24.w,
                       ),
                       onPressed: () {
                         // Navigate to Intro screen
@@ -118,8 +117,8 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomNumpad extends StatelessWidget {
   final Function(String) onNumberTapped;
-  final VoidCallback onClearTapped;
-  final VoidCallback onOkTapped;
+  final Future<void> Function() onClearTapped;
+  final Future<void> Function() onOkTapped;
 
   const CustomNumpad({
     super.key,
@@ -89,13 +89,13 @@ class CustomNumpad extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: AppConstants.spacingSM),
         child: SizedBox(
-          height: 64.h,
+          height: 55.h,
           child: FilledButton.tonal(
             onPressed: () => onNumberTapped(number),
             style: FilledButton.styleFrom(
               backgroundColor: context.colorScheme.surfaceContainerHighest,
               foregroundColor: context.colorScheme.onSurface,
-              shape: RoundedRectangleBorder(borderRadius: context.radiusMD),
+              shape: RoundedRectangleBorder(borderRadius: context.radiusXL),
               elevation: 0,
             ),
             child: Text(

@@ -16,7 +16,12 @@ void main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
-        supportedLocales: const [Locale('vi'), Locale('en')],
+        supportedLocales: const [
+          Locale('vi'),
+          Locale('en'),
+          Locale('ja'),
+          Locale('zh'),
+        ],
         path:
             'assets/translations', // <-- change the path of the translation files
         fallbackLocale: const Locale('vi'),

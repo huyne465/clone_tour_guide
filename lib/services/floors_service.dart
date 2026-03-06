@@ -1,3 +1,4 @@
+import 'package:clone_tour_guide/constants/app_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:clone_tour_guide/models/floor.dart';
 import 'package:clone_tour_guide/services/api_client.dart';
@@ -9,7 +10,7 @@ class FloorsService {
 
   Future<List<Floor>> getFloors() async {
     try {
-      final response = await _apiClient.dio.get('/floors');
+      final response = await _apiClient.dio.get(AppEndpoints.floors);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((json) => Floor.fromJson(json)).toList();

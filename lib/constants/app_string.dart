@@ -31,4 +31,11 @@ class AppString {
   static const String floorL1 = 'floor_l1';
   static const String floorL2 = 'floor_l2';
   static const String floorRooftop = 'floor_rooftop';
+
+  static const String poiNotFound = 'poi_not_found';
+
+  static const String loading = 'loading';
+  static const String loadingDesc = 'loading_desc';
+  static const String loadError = 'load_error';
+  static const String retry = 'retry';
 }

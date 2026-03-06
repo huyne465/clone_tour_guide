@@ -1,12 +1,11 @@
+import 'package:clone_tour_guide/constants/app_endpoints.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiClient {
   late final Dio _dio;
 
   ApiClient() {
-    final String baseUrl =
-        dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000';
+    final String baseUrl = AppEndpoints.baseUrl;
 
     _dio = Dio(
       BaseOptions(
