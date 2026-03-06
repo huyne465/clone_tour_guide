@@ -65,7 +65,47 @@ class MapScreen extends HookConsumerWidget {
                       alignment: Alignment.center,
                       children: [
                         if (selectedFloor.value!.mapImageUrl != null)
-                          Image.network(selectedFloor.value!.mapImageUrl!)
+                          ColoredBox(
+                            color: Colors.white,
+                            child: Image.network(
+                              selectedFloor.value!.mapImageUrl!,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return SizedBox(
+                                  width: constraints.maxWidth,
+                                  height: constraints.maxWidth * 0.75,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  SizedBox(
+                                    width: constraints.maxWidth,
+                                    height: constraints.maxWidth * 0.75,
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.broken_image,
+                                            size: 64,
+                                            color: Colors.grey,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Không tải được ảnh bản đồ',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                            ),
+                          )
                         else
                           Container(
                             width: constraints.maxWidth,
